@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+{% block title %}Choose a portal{% endblock %}
+{% block content %}
+<section class="login-layout">
+  <div class="login-intro">
+    <p class="eyebrow">CAMPUS LEDGER / SECURE ACCESS</p>
+    <h1>Your academic journey, in one place.</h1>
+    <p class="lede">Choose your portal, then sign in to access the right account.</p>
+    <div class="portal-cards">
+      <a class="portal-card is-selected" href="{{ url_for('main.admin_login') }}" data-portal="admin" aria-pressed="true">
+        <span class="choice-mark">A</span>
+        <span class="portal-card-copy"><strong>Admin portal</strong><span>Manage every student and academic record.</span></span>
+        <span class="portal-arrow" aria-hidden="true">&#8594;</span>
+      </a>
+      <a class="portal-card" href="{{ url_for('main.student_login') }}" data-portal="student" aria-pressed="false">
+        <span class="choice-mark student">S</span>
+        <span class="portal-card-copy"><strong>Student portal</strong><span>View and edit only your own details.</span></span>
+        <span class="portal-arrow" aria-hidden="true">&#8594;</span>
+      </a>
+    </div>
+  </div>
+  <form class="login-card" method="post" action="{{ url_for('main.admin_login') }}" id="portal-login-form">
+    <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
+    <p class="eyebrow" id="portal-form-eyebrow">ADMIN ACCESS</p>
+    <h2 id="portal-form-title">Admin sign in</h2>
+    <p class="lede" id="portal-form-description">Use your configured admin username and password.</p>
+    <label><span id="portal-username-label">Admin username</span><input id="portal-username" name="username" placeholder="Enter admin username" autocomplete="username" required autofocus></label>
+    <label>Password<input id="portal-password" type="password" name="password" placeholder="Enter your password" autocomplete="current-password" required></label>
+    <button class="button primary" id="portal-submit" type="submit">Continue to admin portal <span aria-hidden="true">&#8594;</span></button>
+  </form>
+</section>
+<script>
+  (() => {
+    const form = document.getElementById('portal-login-form');
+    const usernameLabel = document.getElementById('portal-username-label');
+    const usernameInput = document.getElementById('portal-username');
+    const eyebrow = document.getElementById('portal-form-eyebrow');
+    const title = document.getElementById('portal-form-title');
+    const description = document.getElementById('portal-form-description');
+    const submit = document.getElementById('portal-submit');
+    const choices = document.querySelectorAll('[data-portal]');
+
+    choices.forEach((choice) => {
+      choice.addEventListener('click', (event) => {
+        event.preventDefault();
+        const isStudent = choice.dataset.portal === 'student';
+        form.action = isStudent ? "{{ url_for('main.student_login') }}" : "{{ url_for('main.admin_login') }}";
+        usernameLabel.textContent = isStudent ? 'Student ID' : 'Admin username';
+        usernameInput.placeholder = isStudent ? 'Enter your student ID' : 'Enter admin username';
+        usernameInput.autocomplete = isStudent ? 'username' : 'username';
+        eyebrow.textContent = isStudent ? 'STUDENT ACCESS' : 'ADMIN ACCESS';
+        title.textContent = isStudent ? 'Student sign in' : 'Admin sign in';
+        description.textContent = isStudent
+          ? 'Use the student ID and password provided by your administrator.'
+          : 'Use your configured admin username and password.';
+        submit.innerHTML = `Continue to ${isStudent ? 'student' : 'admin'} portal <span aria-hidden="true">→</span>`;
+        choices.forEach((item) => {
+          const selected = item === choice;
+          item.classList.toggle('is-selected', selected);
+          item.setAttribute('aria-pressed', String(selected));
+        });
+        usernameInput.focus();
+      });
+    });
+  })();
+</script>
+{% endblock %}

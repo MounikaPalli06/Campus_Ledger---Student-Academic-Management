@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{% block title %}Edit profile{% endblock %}
+{% block content %}
+<a class="back-link" href="{{ url_for('main.student_detail', student_id=student.student_id) }}">&#8592; Back to profile</a>
+<section class="page-heading compact"><div><p class="eyebrow">{{ 'ADMIN / STUDENT RECORD' if current_user.role == 'admin' else 'STUDENT PORTAL / MY PROFILE' }}</p><h1>Edit profile</h1><p class="lede">Update your contact and enrollment details.</p></div></section>
+<form class="form-panel" method="post">
+  <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
+  <div class="form-grid">
+    <label>Student ID<input value="{{ student.student_id }}" disabled><small>Student IDs cannot be changed because they link your records.</small></label>
+    <label>Full name<input name="name" value="{{ student.name }}" required maxlength="100"></label>
+    <label>Email address<input type="email" name="email" value="{{ student.email }}" required maxlength="160"></label>
+    <label>Department<input name="department" value="{{ student.department }}" required maxlength="100"></label>
+    <label>Year of study<select name="year_of_study" required>{% for year in range(1, 7) %}<option value="{{ year }}" {% if student.year_of_study == year|string %}selected{% endif %}>Year {{ year }}</option>{% endfor %}</select></label>
+  </div>
+  <div class="form-actions"><a class="button secondary" href="{{ url_for('main.student_detail', student_id=student.student_id) }}">Cancel</a><button class="button primary" type="submit">Save changes</button></div>
+</form>
+{% endblock %}

@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% block title %}My student portal{% endblock %}
+{% block content %}
+<section class="page-heading portal-heading">
+  <div><p class="eyebrow">STUDENT PORTAL / PERSONAL OVERVIEW</p><h1>Welcome, {{ student.name.split()[0] }}</h1><p class="lede">Your academic profile is private to your account.</p></div>
+  <a class="button primary" href="{{ url_for('main.student_detail', student_id=student.student_id) }}">View my full profile <span aria-hidden="true">&#8594;</span></a>
+</section>
+<section class="student-welcome">
+  <div class="welcome-avatar">{{ student.name.split()[:2] | map('first') | join | upper }}</div>
+  <div class="welcome-main"><p class="eyebrow">YOUR STUDENT ID</p><strong class="mono">{{ student.student_id }}</strong><h2>{{ student.department }}</h2><p>Year {{ student.year_of_study }} <span class="dot">/</span> {{ student.email }}</p></div>
+  <a class="button secondary" href="{{ url_for('main.edit_student', student_id=student.student_id) }}">Edit my profile</a>
+</section>
+<section class="directory-summary student-summary" aria-label="Academic summary">
+  <div class="summary-stat"><span>ACADEMIC RECORDS</span><strong>{{ records|length }}</strong><small>Saved to your profile</small></div>
+  <div class="summary-stat"><span>PERFORMANCE AVERAGE</span><strong>{% if average is not none %}{{ average }}%{% else %}--{% endif %}</strong><small>Across your records</small></div>
+  <div class="summary-source"><span class="source-mark">ME</span><div><strong>Your academic details</strong><small>Only you and authorized admins can view these.</small></div></div>
+</section>
+<section class="section-heading"><div><p class="eyebrow">YOUR ACADEMIC HISTORY</p><h2>Recent records</h2></div><a class="row-link" href="{{ url_for('main.student_detail', student_id=student.student_id) }}">View all <span aria-hidden="true">&#8594;</span></a></section>
+{% if records %}
+<div class="table-wrap"><table><thead><tr><th>Subject</th><th>Academic year</th><th>Semester</th><th>Exam date</th><th>Marks</th><th>Grade</th><th>Attendance</th></tr></thead><tbody>{% for record in records[:5] %}<tr><td><strong>{{ record.subject }}</strong></td><td>{{ record.academic_year }}</td><td>{{ record.semester }}</td><td>{{ record.exam_date }}</td><td>{{ record.marks }}%</td><td><span class="grade-badge">{{ record.grade }}</span></td><td>{{ record.attendance_percent }}%</td></tr>{% endfor %}</tbody></table></div>
+{% else %}<div class="empty-state"><span class="empty-index">01</span><div><h2>Your academic history will appear here</h2><p>You can add or update your own academic details from your profile.</p></div><a class="button secondary" href="{{ url_for('main.student_detail', student_id=student.student_id) }}">Open my profile</a></div>{% endif %}
+{% endblock %}

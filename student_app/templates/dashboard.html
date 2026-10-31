@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% block title %}Student directory{% endblock %}
+{% block content %}
+<section class="page-heading">
+  <div><p class="eyebrow">ADMIN PORTAL / OVERVIEW</p><h1>Student directory</h1><p class="lede">View and manage every student profile and academic record.</p></div>
+  <a class="button primary" href="{{ url_for('main.add_student') }}">+ Register student</a>
+</section>
+<section class="directory-summary" aria-label="Directory summary">
+  <div class="summary-stat"><span>VISIBLE STUDENTS</span><strong>{{ students|length }}</strong><small>In this view</small></div>
+  <div class="summary-stat"><span>DEPARTMENTS</span><strong>{{ department_count }}</strong><small>Represented</small></div>
+  <div class="summary-stat"><span>YEAR LEVELS</span><strong>{{ year_level_count }}</strong><small>Represented</small></div>
+  <div class="summary-source"><span class="source-mark">DB</span><div><strong>All records</strong><small>MongoDB Atlas</small></div></div>
+</section>
+<section class="toolbar">
+  <form class="search" method="get" action="{{ url_for('main.dashboard') }}"><label class="sr-only" for="q">Search students</label><input id="q" name="q" value="{{ search }}" placeholder="Search name, ID, or department"><button class="button secondary" type="submit">Search</button>{% if search %}<a class="clear-link" href="{{ url_for('main.dashboard') }}">Clear</a>{% endif %}</form>
+  <span class="result-count">{{ students|length }} student{% if students|length != 1 %}s{% endif %}</span>
+</section>
+{% if students %}
+<div class="table-wrap"><table><thead><tr><th>Student</th><th>Student ID</th><th>Department</th><th>Year</th><th>Portal access</th><th></th></tr></thead><tbody>
+{% for student in students %}<tr><td><div class="student-identity"><span class="student-avatar" aria-hidden="true">{{ student.name.split()[:2] | map('first') | join | upper }}</span><span><strong>{{ student.name }}</strong><span class="subline">{{ student.email }}</span></span></div></td><td class="mono">{{ student.student_id }}</td><td><span class="department-label">{{ student.department }}</span></td><td><span class="year-label">Year {{ student.year_of_study }}</span></td><td><span class="access-badge {{ 'active' if student.has_account else 'pending' }}">{{ 'Active' if student.has_account else 'Setup needed' }}</span></td><td><a class="row-link" href="{{ url_for('main.student_detail', student_id=student.student_id) }}">Manage <span aria-hidden="true">&#8594;</span></a></td></tr>{% endfor %}
+</tbody></table></div>
+{% else %}<div class="empty-state"><span class="empty-index">01</span><div><h2>No students found</h2><p>{% if search %}Try a different search, or clear the filter.{% else %}Register a student to begin the academic record.{% endif %}</p></div>{% if not search %}<a class="button secondary" href="{{ url_for('main.add_student') }}">Add the first student</a>{% endif %}</div>{% endif %}
+{% endblock %}

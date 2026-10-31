@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+{% block title %}{{ 'Edit' if editing else 'Add' }} academic record{% endblock %}
+{% block content %}
+<a class="back-link" href="{{ url_for('main.student_detail', student_id=student.student_id) }}">&#8592; {{ student.name }}'s profile</a>
+<section class="page-heading compact"><div><p class="eyebrow">MONGODB / ACADEMIC RECORD</p><h1>{{ 'Edit academic record' if editing else 'Add academic record' }}</h1><p class="lede">Student ID: <span class="mono">{{ student.student_id }}</span></p></div></section>
+<form class="form-panel" method="post">
+  <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
+  <div class="form-grid">
+    <label>Subject<input name="subject" value="{{ record.get('subject', '') }}" placeholder="e.g. Database Systems" required maxlength="100"></label>
+    <label>Academic year<input name="academic_year" value="{{ record.get('academic_year', '') }}" placeholder="e.g. 2025-2026" required maxlength="20"></label>
+    <label>Semester<select name="semester" required><option value="">Select semester</option>{% for semester in range(1, 9) %}<option value="{{ semester }}" {% if record.get('semester') == semester %}selected{% endif %}>Semester {{ semester }}</option>{% endfor %}</select></label>
+    <label>Exam date<input type="date" name="exam_date" value="{{ record.get('exam_date', '') }}" required></label>
+    <label>Marks (0-100)<input type="number" name="marks" value="{{ record.get('marks', '') }}" min="0" max="100" step="0.01" placeholder="0 to 100" required></label>
+    <label>Attendance (0-100%)<input type="number" name="attendance_percent" value="{{ record.get('attendance_percent', '') }}" min="0" max="100" step="0.01" placeholder="0 to 100" required></label>
+  </div>
+  <p class="form-note">The system assigns a letter grade from marks when the record is saved.</p>
+  <div class="form-actions"><a class="button secondary" href="{{ url_for('main.student_detail', student_id=student.student_id) }}">Cancel</a><button class="button primary" type="submit">{{ 'Update' if editing else 'Save' }} academic record</button></div>
+</form>
+{% endblock %}

@@ -1,0 +1,3 @@
+{% extends 'base.html' %}
+{% block title %}Student not found{% endblock %}
+{% block content %}<div class="empty-state not-found"><span class="empty-index">404</span><div><p class="eyebrow">RECORD NOT FOUND</p><h1>Student not found</h1><p>No profile exists for ID <span class="mono">{{ student_id }}</span>.</p></div><a class="button secondary" href="{{ url_for('main.dashboard') }}">Back to directory</a></div>{% endblock %}

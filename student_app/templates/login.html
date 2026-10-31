@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+{% block title %}{{ 'Admin' if role == 'admin' else 'Student' }} sign in{% endblock %}
+{% block content %}
+<section class="login-layout">
+  <div class="login-intro">
+    <p class="eyebrow">CAMPUS LEDGER / {{ 'ADMIN ACCESS' if role == 'admin' else 'STUDENT ACCESS' }}</p>
+    <h1>{{ 'Manage every student record.' if role == 'admin' else 'Your academic journey, in one place.' }}</h1>
+    <p class="lede">{{ 'Review, update, and manage student profiles and academic records.' if role == 'admin' else 'View and update your own profile and academic records.' }}</p>
+    <div class="portal-choice">
+      <div class="choice-mark">{{ 'A' if role == 'admin' else 'S' }}</div>
+      <div><strong>{{ 'Admin portal' if role == 'admin' else 'Student portal' }}</strong><span>{{ 'Sign in with your admin username.' if role == 'admin' else 'Sign in with your student ID.' }}</span></div>
+    </div>
+    <a class="portal-switch" href="{{ url_for('main.student_login') if role == 'admin' else url_for('main.admin_login') }}">
+      Sign in as {{ 'a student' if role == 'admin' else 'an admin' }} instead
+    </a>
+  </div>
+  <form class="login-card" method="post">
+    <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
+    <p class="eyebrow">WELCOME BACK</p>
+    <h2>{{ 'Admin sign in' if role == 'admin' else 'Student sign in' }}</h2>
+    <p class="lede">{{ 'Use your configured admin username and password.' if role == 'admin' else 'Use the student ID and password provided by your administrator.' }}</p>
+    <label>{{ 'Admin username' if role == 'admin' else 'Student ID' }}<input name="username" autocomplete="username" required autofocus></label>
+    <label>Password<input type="password" name="password" autocomplete="current-password" required></label>
+    <button class="button primary" type="submit">Continue to {{ 'admin' if role == 'admin' else 'student' }} portal <span aria-hidden="true">&#8594;</span></button>
+  </form>
+</section>
+{% endblock %}

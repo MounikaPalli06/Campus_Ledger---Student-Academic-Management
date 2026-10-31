@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}Campus Ledger{% endblock %} | Student Records</title>
+  <script>
+    (() => {
+      let theme = 'light';
+      try {
+        const savedTheme = localStorage.getItem('campus-ledger-theme');
+        if (savedTheme === 'dark' || savedTheme === 'light') theme = savedTheme;
+      } catch (error) {
+        console.warn('Theme preference could not be loaded.', error);
+      }
+      document.documentElement.dataset.theme = theme;
+    })();
+  </script>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="{{ url_for('main.dashboard') if current_user and current_user.role == 'admin' else url_for('main.student_dashboard') if current_user else url_for('main.login') }}"><span class="brand-mark">CL</span><span>Campus Ledger<small>STUDENT PORTAL</small></span></a>
+    <nav>
+      {% if current_user %}
+        {% if current_user.role == 'admin' %}<a href="{{ url_for('main.dashboard') }}">Admin portal</a><a class="nav-action" href="{{ url_for('main.add_student') }}">+ Add student</a>
+        {% else %}<a href="{{ url_for('main.student_dashboard') }}">My portal</a><a href="{{ url_for('main.change_password') }}">Password</a>{% endif %}
+        <span class="nav-user">{{ current_user.username }}</span>
+        <form class="nav-logout" method="post" action="{{ url_for('main.logout') }}"><input type="hidden" name="_csrf_token" value="{{ csrf_token() }}"><button type="submit">Sign out</button></form>
+      {% else %}<a href="{{ url_for('main.admin_login') }}">Admin sign in</a><a href="{{ url_for('main.student_login') }}">Student sign in</a>{% endif %}
+      <button class="theme-toggle" id="theme-toggle" type="button" aria-label="Switch to dark theme" aria-pressed="false">Dark mode</button>
+    </nav>
+  </header>
+  <main class="page-shell">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}<div class="flash-stack">{% for category, message in messages %}<div class="flash {{ category }}">{{ message }}</div>{% endfor %}</div>{% endif %}
+    {% endwith %}
+    {% block content %}{% endblock %}
+  </main>
+  <footer class="footer">Student Information and Academic Performance Management <span>Secure student portals</span></footer>
+  <script>
+    (() => {
+      const toggle = document.getElementById('theme-toggle');
+      const updateToggle = () => {
+        const isDark = document.documentElement.dataset.theme === 'dark';
+        toggle.textContent = isDark ? 'Light mode' : 'Dark mode';
+        toggle.setAttribute('aria-label', `Switch to ${isDark ? 'light' : 'dark'} theme`);
+        toggle.setAttribute('aria-pressed', String(isDark));
+      };
+
+      updateToggle();
+      toggle.addEventListener('click', () => {
+        const theme = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
+        document.documentElement.dataset.theme = theme;
+        updateToggle();
+        try {
+          localStorage.setItem('campus-ledger-theme', theme);
+        } catch (error) {
+          console.warn('Theme preference could not be saved.', error);
+        }
+      });
+    })();
+  </script>
+</body>
+</html>
